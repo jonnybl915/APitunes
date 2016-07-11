@@ -39,33 +39,38 @@ module.exports = function(app) {
     app.controller('guestController', ['$scope', 'userService', 'songService', '$http', function($scope, userService, songService, $http) {
 
       $scope.artistSongList = songService.getArtistSongs();
+      $scope.user = userService.getCurrentUser();
 
 
 
 
 
 
-    $scope.like = function(){
-      console.log("i like this");
-      $http({
-        method: 'POST',
-        url:'/upVote{id}',
-        data: {id},
-      }).then(function(response){
-        songService.getArtistSongs();
-      })
-    };
 
-    $scope.dislike = function(){
-      console.log("i dont like this");
-      $http({
-        method: 'POST',
-        url:'/downVote{id}',
-        data: {id},
-      }).then(function(response){
-        songService.getArtistSongs();
-      })
-    };
+      $scope.like = function(id){
+        console.log("i like this");
+        $http({
+          method: 'POST',
+          url:`/upVote${id}`,
+          data: id,
+        }).then(function(response){
+          songService.getArtistSongs();
+          console.log($scope.artistLikes);
+        })
+      };
+
+      $scope.dislike = function(id){
+        console.log("i dont like this");
+        $http({
+          method: 'POST',
+          url:`/downVote${id}`,
+          data: id,
+        }).then(function(response){
+          songService.getArtistSongs();
+
+        })
+      };
+
 
 
 
@@ -195,6 +200,11 @@ module.exports = function(app){
               $location.path('/artist');
               angular.copy(response.data, currentUser )
               console.log(currentUser);
+            }else if (response.data.isUser === true) {
+              $location.path('/guest');
+              angular.copy(response.data, currentUser )
+              console.log(currentUser);
+
             }
           })
       },
